@@ -2,54 +2,36 @@ import os
 import csv
 from datetime import datetime
 import requests
-from bs4 import BeautifulSoup
 
-# 1. EXTRACT & PARSE: Scrape the direct static HTML from GoodReturns
+# 1. EXTRACT: Fetch tokenized real-time gold price using Demo API Key
 try:
-    url = "https://www.goodreturns.in/gold-rates/hyderabad.html"
+    api_key = os.environ.get("COINGECKO_API_KEY")
     
-    # Mirroring realistic browser parameters prevents immediate firewall blocks
+    # Updated URL structure explicitly for the free Developer Demo API domain
+    url = f"https://coingecko.com{api_key}"
+    
+    # Adding headers prevents the server from blocking the script as a basic bot
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept-Language": "en-US,en;q=0.9"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     }
     
-    response = requests.get(url, headers=headers, timeout=15)
-    response.raise_for_status()
+    response = requests.get(url, headers=headers)
+    response.raise_for_status() # Force an explicit error if the webpage blocks us
+    data = response.json()
     
-    soup = BeautifulSoup(response.text, 'html.parser')
+    price_per_ounce_inr = data["pax-gold"]["inr"]
+    price_per_gram_24k = round(price_per_ounce_inr / 31.1034768, 2)
     
-    # Locating the specific text elements inside the GoodReturns data grid
-    # Grabbing the 24K raw pricing value string
-    price_element = soup.find("div", {"id": "current-price"}).find("strong")
-    
-    if not price_element:
-        # Fallback tracking if their element structure changes slightly
-        gold_table = soup.find("table")
-        rows = gold_table.find_all("tr")
-        # Extract row containing 1 gram metrics 
-        for row in rows:
-            if "1" in row.text and "₹" in row.text:
-                price_text = row.find_all("td")[1].text
-                break
-    else:
-        price_text = price_element.text
-
-    # TRANSFORM: Clean string characters like currency symbols or commas
-    # e.g., '₹14,351' becomes float 14351.00
-    clean_price = price_text.replace("₹", "").replace(",", "").strip()
-    price_per_gram_24k = float(clean_price)
-
 except Exception as e:
-    print(f"❌ WEB SCRAPING FAILED: {e}")
+    print(f"❌ DATA EXTRACTION FAILED: {e}")
     exit(1)
 
-# Format structured date entries
+# Split up the timestamps into distinct data metrics
 now = datetime.utcnow()
 current_date = now.strftime("%Y-%m-%d")
 current_time = now.strftime("%H:%M:%S")
 
-# 2. LOAD: Append variables to your CSV
+# 2. LOAD: Append the 24K data with separate date columns
 file_path = "gold_prices.csv"
 file_exists = os.path.isfile(file_path)
 
@@ -67,7 +49,7 @@ if price_per_gram_24k <= ALERT_THRESHOLD:
     chat_id = os.environ.get("TELEGRAM_CHAT_ID")
     
     message = (
-        f"🚨 24K HYDERABAD GOLD PRICE DROP ALERT!\n\n"
+        f"🚨 24K GOLD PRICE DROP ALERT!\n\n"
         f"The price of 1 gram of 24K gold has dropped below your threshold!\n"
         f"📉 Current Price: ₹{price_per_gram_24k}/gm\n"
         f"🎯 Target Level: ≤ ₹{ALERT_THRESHOLD}\n"
