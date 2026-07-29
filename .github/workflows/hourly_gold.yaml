@@ -1,14 +1,15 @@
-name: Hourly Gold Tracker
+name: Daily Telegram Ping
 
 on:
   push:
     branches: [main]
   schedule:
-    - cron: '0 * * * *'
+    # Runs exactly once a day at 12:00 PM UTC (5:30 PM IST)
+    - cron: '0 12 * * *'
   workflow_dispatch:
 
 jobs:
-  track-gold:
+  send-ping:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,16 +23,8 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run Tracker and Check Alert
+      - name: Execute Daily Ping Script
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python gold_tracker.py
-
-      - name: Save CSV Data back to Repo
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "Gold Tracker Bot"
-          git add gold_prices.csv
-          git commit -m "data: hourly gold price update [skip ci]" || echo "No changes"
-          git push
