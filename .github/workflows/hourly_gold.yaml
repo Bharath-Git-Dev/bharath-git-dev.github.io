@@ -1,11 +1,11 @@
-# yml for Gold Tracker
 name: Hourly Gold Tracker
 
 on:
+  push:
+    branches: [main]
   schedule:
-    # Runs exactly at the start of every hour
     - cron: '0 * * * *'
-  workflow_dispatch: # Allows you to run it manually to test
+  workflow_dispatch:
 
 jobs:
   track-gold:
@@ -20,12 +20,13 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4
+        run: pip install requests
 
       - name: Run Tracker and Check Alert
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
         run: python gold_tracker.py
 
       - name: Save CSV Data back to Repo
