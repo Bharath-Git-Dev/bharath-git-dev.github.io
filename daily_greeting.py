@@ -23,8 +23,8 @@ def send_telegram_greeting():
     # Construct the greeting message
     message = f"Hi\n📅 Date: {current_date}\n🕒 Time: {current_time} IST"
     
-    # Correct Telegram API URL endpoint
-    telegram_url = f"https://telegram.org{bot_token}/sendMessage"
+    # CORRECT ENDPOINT: Notice the "api.telegram.org/bot" structure
+    telegram_url = f"https://api.telegram.org{bot_token}/sendMessage"
     
     try:
         response = requests.post(telegram_url, data={"chat_id": chat_id, "text": message})
