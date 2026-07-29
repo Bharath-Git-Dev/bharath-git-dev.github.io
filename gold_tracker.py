@@ -3,12 +3,12 @@ import csv
 from datetime import datetime
 import requests
 
-# 1. EXTRACT: Fetch tokenized real-time gold price using your Demo API Key
+# 1. EXTRACT: Fetch tokenized real-time gold price safely via GitHub Environment Variables
 try:
-    # 🌟 PASTE YOUR EXACT COINGECKO API KEY INSIDE THESE QUOTES:
-    api_key = "cg-kggejjqvrlbyzbb6zhjfzafn" 
+    # Safely fetches the key from your GitHub secrets store
+    api_key = os.environ.get("COINGECKO_API_KEY")
     
-    # Corrected URL format: Notice the 'x_cg_demo_api_key=' portion is properly separated
+    # 🌟 CLEAN URL STRUCTURE: Completely immune to string pasting typos
     url = f"https://coingecko.com{api_key}"
     
     headers = {
@@ -42,6 +42,7 @@ with open(file_path, mode="a", newline="") as file:
     writer.writerow([current_date, current_time, price_per_gram_24k])
 
 # 3. ALERT CONDITIONAL: Fire alert only if price targets ₹14,000 or lower
+# (To test your Telegram bot right now, you can temporarily change this to 200000.00!)
 ALERT_THRESHOLD = 14000.00
 
 if price_per_gram_24k <= ALERT_THRESHOLD:
