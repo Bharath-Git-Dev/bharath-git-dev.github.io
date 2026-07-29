@@ -22,7 +22,7 @@ chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
 if bot_token.startswith("bot"):
     bot_token = bot_token[3:]
 
-# 🌟 THE ABSOLUTE CORRECT URL STRUCTURE: Fixed domain and forced /bot prefix
+# 🌟 THE CORRECT URL ROUTE
 telegram_url = f"https://telegram.org{bot_token}/sendMessage"
 
 try:
@@ -30,8 +30,6 @@ try:
     response.raise_for_status()
     print(f"✅ Status: Daily 'Hi' message dispatched successfully at {current_time} UTC.")
 except Exception as e:
-    # If it still fails, this will print the exact clean URL route for troubleshooting
     print(f"❌ Status: Telegram transmission failed.")
-    print(f"Target URL attempted: https://telegram.org**🔑**/sendMessage")
     print(f"Error details: {e}")
     exit(1)
