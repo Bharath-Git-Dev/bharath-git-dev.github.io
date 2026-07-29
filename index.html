@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Architecture | Portfolio</title>
+    <title>Bharath Portfolio | Project Architecture </title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root {
@@ -23,45 +23,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
             box-sizing: border-box;
         }
         .container {
-            max-width: 1100px;
+            max-width: 600px;
             width: 100%;
-        }
-        /* Navigation Styles */
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        nav a {
-            color: var(--text-muted);
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        nav a:hover {
-            color: var(--text-main);
-            border-color: var(--accent);
-        }
-        nav a.active {
-            color: var(--text-main);
-            background-color: #0284c720;
-            border-color: var(--accent);
-        }
-        header {
-            margin-bottom: 2rem;
             text-align: center;
         }
         h1 {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             margin: 0 0 0.5rem 0;
             font-weight: 700;
             letter-spacing: -0.025em;
@@ -69,114 +41,40 @@
         p.subtitle {
             color: var(--text-muted);
             font-size: 1.1rem;
-            margin: 0 0 1.5rem 0;
+            margin: 0 0 2.5rem 0;
         }
-        .tags {
+        .links-grid {
             display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
+            flex-direction: column;
+            gap: 1rem;
         }
-        .tag {
-            background-color: #0284c720;
-            color: var(--accent);
-            border: 1px solid #0284c740;
-            padding: 0.35rem 0.8rem;
-            border-radius: 9999px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        .showcase-card {
-            background-color: var(--card-bg);
+        a {
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 1.25rem;
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-        .showcase-card img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            transition: transform 0.3s ease;
-        }
-        .showcase-card img:hover {
-            transform: scale(1.01);
-        }
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-        @media (min-width: 768px) {
-            .details-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        .info-box {
-            background-color: #1e293b50;
-            border: 1px solid var(--border);
-            padding: 1.5rem;
             border-radius: 12px;
+            background-color: var(--card-bg);
+            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
         }
-        .info-box h3 {
-            margin-top: 0;
-            color: var(--accent);
-            font-size: 1.2rem;
-        }
-        .info-box p, .info-box ul {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 0;
-        }
-        .info-box ul {
-            padding-left: 1.2rem;
+        a:hover {
+            border-color: var(--accent);
+            background-color: #0284c715;
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Navigation Menu -->
-        <nav>
-            <a href="index.html" class="active">EPAM Project</a>
-            <a href="cloud-architecture.html">Cloud Architecture</a>
-        </nav>
-
-        <header>
-            <h1>System Architecture Design</h1>
-            <p class="subtitle"></p>
-            <div class="tags">
-                <span class="tag">AWS / Cloud</span>
-                <span class="tag">Palantir Foundry</span>
-                <span class="tag">CI/CD Pipeline</span>
-            </div>
-        </header>
-        <main>
-            <div class="showcase-card">
-                <img src="epam_project_architecture.jpg" alt="System Architecture Diagram Blueprint">
-            </div>
-            <div class="details-grid">
-                <div class="info-box">
-                    <h3>Key Highlights</h3>
-                    <ul>
-                        <li>Designed for high availability, zero downtime, and seamless horizontal scaling.</li>
-                        <li>Implements robust security protocols with restricted VPC access boundaries.</li>
-                        <li>Optimized data tiering layouts to handle heavy peak application workloads.</li>
-                    </ul>
-                </div>
-                <div class="info-box">
-                    <h3>Architecture Summary</h3>
-                    <p>This structural schematic breaks down data flow across services, caching mechanisms, external integrations, and background worker queues processing real-time requests efficiently.</p>
-                </div>
-            </div>
-        </main>
+        <h1>System Architecture Portfolio</h1>
+        <p class="subtitle">Select a project case study below to explore structural schematics</p>
+        <div class="links-grid">
+            <a href="project_epam/">EPAM Project Design</a>
+            <a href="project_infosys/">Infosys Project Design</a>
+        </div>
     </div>
 </body>
 </html>
