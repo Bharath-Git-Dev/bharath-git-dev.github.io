@@ -3,10 +3,10 @@ import csv
 from datetime import datetime
 import requests
 
-# 1. EXTRACT: Fetch gold spot value using highly scalable public CDN endpoints
+# 1. EXTRACT: Fetch gold spot value using highly accessible open mirror architecture
 try:
-    # Fetch global currency metrics mapped directly to Gold (XAU) from an open CDN mirror
-    url = "https://jsdelivr.net"
+    # Use the primary open CDN repository mirror mapping directly for Indian Rupees (INR)
+    url = "https://pages.dev"
     
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -14,20 +14,25 @@ try:
     
     response = requests.get(url, headers=headers, timeout=15)
     
-    # Backup alternative engine endpoint route if the primary CDN is routing slow
+    # Debugging layer: print raw content if the server fails with an odd status code
     if response.status_code != 200:
-        url = "https://pages.dev"
-        response = requests.get(url, headers=headers, timeout=15)
+        print(f"⚠️ Server returned status code {response.status_code}. Raw Body contents:")
+        print(response.text[:500])
+        response.raise_for_status()
         
-    response.raise_for_status()
-    data = response.json()
+    try:
+        data = response.json()
+    except Exception as json_err:
+        print("❌ CRITICAL: The data received was not JSON text! Raw response was:")
+        print(response.text[:500]) # Prints the first 500 characters of the block page
+        raise json_err
     
-    # Get the value of 1 Troy Ounce of Gold converted to Indian Rupees (INR)
-    # The API returns the value of 1 INR in XAU, so we take the inverse (1 / value)
-    inr_to_xau_rate = float(data["xau"]["inr"])
+    # The API returns how much 1 INR is worth in Gold (xau)
+    # Example snippet: data["inr"]["xau"] = 0.00000456
+    inr_to_xau_rate = float(data["inr"]["xau"])
+    
+    # Calculate: Invert to get 1 Troy Ounce value in INR, then convert to 1 Gram of 24K Gold
     price_per_ounce_inr = 1 / inr_to_xau_rate
-    
-    # Convert 1 Troy Ounce directly to 1 Gram of 24K Gold
     price_per_gram_24k = round(price_per_ounce_inr / 31.1034768, 2)
     
 except Exception as e:
@@ -50,7 +55,6 @@ with open(file_path, mode="a", newline="") as file:
     writer.writerow([current_date, current_time, price_per_gram_24k])
 
 # 3. ALERT CONDITIONAL: Fire alert only if price targets ₹14,000 or lower
-# (To test your Telegram bot right now, you can temporarily change this to 200000.00!)
 ALERT_THRESHOLD = 14000.00
 
 if price_per_gram_24k <= ALERT_THRESHOLD:
@@ -63,7 +67,7 @@ if price_per_gram_24k <= ALERT_THRESHOLD:
         f"📉 Current Price: ₹{price_per_gram_24k}/gm\n"
         f"🎯 Target Level: ≤ ₹{ALERT_THRESHOLD}\n"
         f"🕒 Time: {current_date} {current_time} UTC\n"
-        f"🌐 Source: Open Currency Engine"
+        f"🌐 Source: Open Mirror Network Engine"
     )
     
     telegram_url = f"https://telegram.org{bot_token}/sendMessage"
