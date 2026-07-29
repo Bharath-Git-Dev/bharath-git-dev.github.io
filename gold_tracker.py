@@ -3,29 +3,31 @@ import csv
 from datetime import datetime
 import requests
 
-# 1. EXTRACT: Fetch gold price in INR using ultra-stable public endpoints
+# 1. EXTRACT: Fetch traditional spot gold price using yfinance public web queries
 try:
-    # Fetch live PAX Gold price in USD from Coinbase Public API
-    gold_url = "https://coinbase.com"
-    gold_response = requests.get(gold_url, timeout=10)
+    # 1 Troy Ounce of Gold Spot price in USD
+    gold_url = "https://yahoo.com"
+    # Live USD to INR conversion rate ticker
+    fx_url = "https://yahoo.com"
     
-    # Fallback to older v2 endpoint if v3 experiences a localized cloud hiccup
-    if gold_response.status_code != 200:
-        gold_url = "https://coinbase.com"
-        gold_response = requests.get(gold_url, timeout=10)
-        gold_response.raise_for_status()
-        price_per_ounce_usd = float(gold_response.json()["data"]["amount"])
-    else:
-        # Parse the price from Coinbase's primary v3 engine
-        price_per_ounce_usd = float(gold_response.json()["price"])
-
-    # Fetch live USD to INR fiat conversion rate from an open exchange api
-    fx_url = "https://er-api.com"
-    fx_response = requests.get(fx_url, timeout=10)
+    # Masquerade cleanly using robust browser headers to bypass cloud firewalls
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    
+    # Fetch Gold USD price
+    gold_response = requests.get(gold_url, headers=headers, timeout=15)
+    gold_response.raise_for_status()
+    gold_data = gold_response.json()
+    price_per_ounce_usd = float(gold_data["chart"]["result"][0]["meta"]["regularMarketPrice"])
+    
+    # Fetch Currency conversion rate
+    fx_response = requests.get(fx_url, headers=headers, timeout=15)
     fx_response.raise_for_status()
-    usd_to_inr_rate = float(fx_response.json()["rates"]["INR"])
-
-    # Combine metrics: Convert total Ounce value to INR, then reduce to 1 Gram of 24K Gold
+    fx_data = fx_response.json()
+    usd_to_inr_rate = float(fx_data["chart"]["result"][0]["meta"]["regularMarketPrice"])
+    
+    # Calculate: Convert Troy Ounce USD to INR, then divide to get price per 1 Gram of 24K Gold
     price_per_ounce_inr = price_per_ounce_usd * usd_to_inr_rate
     price_per_gram_24k = round(price_per_ounce_inr / 31.1034768, 2)
     
@@ -61,7 +63,7 @@ if price_per_gram_24k <= ALERT_THRESHOLD:
         f"📉 Current Price: ₹{price_per_gram_24k}/gm\n"
         f"🎯 Target Level: ≤ ₹{ALERT_THRESHOLD}\n"
         f"🕒 Time: {current_date} {current_time} UTC\n"
-        f"🌐 Source: Public Market API Feed"
+        f"🌐 Source: Market Ticker Feed"
     )
     
     telegram_url = f"https://telegram.org{bot_token}/sendMessage"
