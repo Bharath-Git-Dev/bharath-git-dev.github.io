@@ -1,17 +1,12 @@
+import csv
 import os
 from datetime import datetime
 import pytz
-import requests
 
-def send_telegram_greeting():
-    # Fetch environment variables
-    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+def log_datetime_to_csv():
+    # Define CSV file name
+    csv_file = "datetime_log.csv"
     
-    if not bot_token or not chat_id:
-        print("Error: Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID environment variables.")
-        return
-
     # Get current time in India (IST)
     ist_tz = pytz.timezone('Asia/Kolkata')
     now_ist = datetime.now(ist_tz)
@@ -19,21 +14,26 @@ def send_telegram_greeting():
     # Format date and time
     current_date = now_ist.strftime("%d-%m-%Y")
     current_time = now_ist.strftime("%I:%M %p")
-
-    # Construct the greeting message
-    message = f"Hi\n📅 Date: {current_date}\n🕒 Time: {current_time} IST"
     
-    # CORRECT ENDPOINT: Notice the "api.telegram.org/bot" structure
-    telegram_url = f"https://api.telegram.org{bot_token}/sendMessage"
+    # Check if file exists to determine if we need headers
+    file_exists = os.path.isfile(csv_file)
     
     try:
-        response = requests.post(telegram_url, data={"chat_id": chat_id, "text": message})
-        if response.status_code == 200:
-            print(f"Message sent successfully at {current_time} IST")
-        else:
-            print(f"Telegram API Error: {response.text}")
+        # Open file in append mode
+        with open(csv_file, mode='a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            
+            # Write header if creating a new file
+            if not file_exists:
+                writer.writerow(["Date", "Time"])
+                
+            # Append the current date and time
+            writer.writerow([current_date, current_time])
+            
+        print(f"Successfully logged to CSV: {current_date} at {current_time} IST")
+        
     except Exception as e:
-        print(f"Network error: {e}")
+        print(f"Error writing to CSV: {e}")
 
 if __name__ == "__main__":
-    send_telegram_greeting()
+    log_datetime_to_csv()
