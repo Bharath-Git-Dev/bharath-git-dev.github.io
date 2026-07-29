@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infosys Architecture | Portfolio</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --border: #334155;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 1100px;
+            width: 100%;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        nav a:hover {
+            color: var(--text-main);
+            border-color: var(--accent);
+        }
+        nav a.active {
+            color: var(--text-main);
+            background-color: #0284c720;
+            border-color: var(--accent);
+        }
+        header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 0 0 1.5rem 0;
+        }
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .tag {
+            background-color: #0284c720;
+            color: var(--accent);
+            border: 1px solid #0284c740;
+            padding: 0.35rem 0.8rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .showcase-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        .showcase-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        .showcase-card img:hover {
+            transform: scale(1.01);
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        @media (min-width: 768px) {
+            .details-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .info-box {
+            background-color: #1e293b50;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+        .info-box p, .info-box ul {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+        .info-box ul {
+            padding-left: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="../">← Home Hub</a>
+            <a href="../project_epam/">EPAM Project</a>
+            <a href="./" class="active">Infosys Project</a>
+        </nav>
+
+        <header>
+            <h1>System Architecture Design</h1>
+            <p class="subtitle"></p>
+            <div class="tags">
+                <span class="tag">Kubernetes</span>
+                <span class="tag">Databricks</span>
+                <span class="tag">Teradata</span>
+            </div>
+        </header>
+        <main>
+            <div class="showcase-card">
+                <img src="infosys_project_architecture.jpg" alt="Cloud Infrastructure Diagram">
+            </div>
+            <div class="details-grid">
+                <div class="info-box">
+                    <h3>Key Highlights</h3>
+                    <ul>
+                        <li>Automated multi-region cluster deployments driven by infrastructure-as-code configuration scripts.</li>
+                        <li>Configured elastic failovers utilizing decoupled mesh proxy gateway configurations.</li>
+                        <li>Reduced dynamic state latency values using globally edge-cached layers.</li>
+                    </ul>
+                </div>
+                <div class="info-box">
+                    <h3>Architecture Summary</h3>
+                    <p>This layout outlines globally distributed service runtimes, active container health-checks, edge proxy profiles, and asynchronous replication schemas handling cross-datacenter telemetry state maps instantly.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
