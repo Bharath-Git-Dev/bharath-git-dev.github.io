@@ -3,20 +3,30 @@ import csv
 from datetime import datetime
 import requests
 
-# 1. EXTRACT: Fetch tokenized real-time gold price safely via public ticker
+# 1. EXTRACT: Fetch gold price in INR using ultra-stable public endpoints
 try:
-    # Public endpoint for PAXG token priced in Indian Rupees (INR)
-    url = "https://binance.com"
+    # Fetch live PAX Gold price in USD from Coinbase Public API
+    gold_url = "https://coinbase.com"
+    gold_response = requests.get(gold_url, timeout=10)
     
-    # Send request without needing authentication keys
-    response = requests.get(url, timeout=10)
-    response.raise_for_status() 
-    data = response.json()
-    
-    # Binance returns values as strings; convert to float safely
-    price_per_ounce_inr = float(data["price"])
-    
-    # Convert Troy Ounce directly to 1 Gram of 24K Gold
+    # Fallback to older v2 endpoint if v3 experiences a localized cloud hiccup
+    if gold_response.status_code != 200:
+        gold_url = "https://coinbase.com"
+        gold_response = requests.get(gold_url, timeout=10)
+        gold_response.raise_for_status()
+        price_per_ounce_usd = float(gold_response.json()["data"]["amount"])
+    else:
+        # Parse the price from Coinbase's primary v3 engine
+        price_per_ounce_usd = float(gold_response.json()["price"])
+
+    # Fetch live USD to INR fiat conversion rate from an open exchange api
+    fx_url = "https://er-api.com"
+    fx_response = requests.get(fx_url, timeout=10)
+    fx_response.raise_for_status()
+    usd_to_inr_rate = float(fx_response.json()["rates"]["INR"])
+
+    # Combine metrics: Convert total Ounce value to INR, then reduce to 1 Gram of 24K Gold
+    price_per_ounce_inr = price_per_ounce_usd * usd_to_inr_rate
     price_per_gram_24k = round(price_per_ounce_inr / 31.1034768, 2)
     
 except Exception as e:
@@ -39,7 +49,6 @@ with open(file_path, mode="a", newline="") as file:
     writer.writerow([current_date, current_time, price_per_gram_24k])
 
 # 3. ALERT CONDITIONAL: Fire alert only if price targets ₹14,000 or lower
-# (To test your Telegram bot right now, you can temporarily change this to 200000.00!)
 ALERT_THRESHOLD = 14000.00
 
 if price_per_gram_24k <= ALERT_THRESHOLD:
@@ -52,7 +61,7 @@ if price_per_gram_24k <= ALERT_THRESHOLD:
         f"📉 Current Price: ₹{price_per_gram_24k}/gm\n"
         f"🎯 Target Level: ≤ ₹{ALERT_THRESHOLD}\n"
         f"🕒 Time: {current_date} {current_time} UTC\n"
-        f"🌐 Source: Public Market Stream"
+        f"🌐 Source: Public Market API Feed"
     )
     
     telegram_url = f"https://telegram.org{bot_token}/sendMessage"
