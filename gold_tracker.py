@@ -3,27 +3,24 @@ import csv
 from datetime import datetime
 import requests
 
-# 1. EXTRACT: Fetch free real-time gold price directly from GoldPrice.org's data engine
+# 1. EXTRACT: Fetch tokenized real-time gold price safely via public ticker
 try:
-    # Querying GoldPrice.org's direct backend endpoint for Indian Rupees (INR)
-    url = "https://goldprice.org"
+    # Public endpoint for PAXG token priced in Indian Rupees (INR)
+    url = "https://binance.com"
     
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
-    
-    response = requests.get(url, headers=headers)
+    # Send request without needing authentication keys
+    response = requests.get(url, timeout=10)
     response.raise_for_status() 
     data = response.json()
     
-    # GoldPrice.org provides the standard spot price per Troy Ounce ('xauPrice')
-    price_per_ounce_inr = data["items"][0]["xauPrice"]
+    # Binance returns values as strings; convert to float safely
+    price_per_ounce_inr = float(data["price"])
     
     # Convert Troy Ounce directly to 1 Gram of 24K Gold
     price_per_gram_24k = round(price_per_ounce_inr / 31.1034768, 2)
     
 except Exception as e:
-    print(f"❌ DATA EXTRACTION FAILED FROM GOLDPRICE.ORG: {e}")
+    print(f"❌ DATA EXTRACTION FAILED: {e}")
     exit(1)
 
 # Split up the timestamps into distinct data metrics
@@ -55,14 +52,13 @@ if price_per_gram_24k <= ALERT_THRESHOLD:
         f"📉 Current Price: ₹{price_per_gram_24k}/gm\n"
         f"🎯 Target Level: ≤ ₹{ALERT_THRESHOLD}\n"
         f"🕒 Time: {current_date} {current_time} UTC\n"
-        f"🌐 Source: GoldPrice.org"
+        f"🌐 Source: Public Market Stream"
     )
     
-    # Corrected Endpoint routing to handle Telegram Bot API specifications securely
     telegram_url = f"https://telegram.org{bot_token}/sendMessage"
     
     try:
-        alert_response = requests.post(telegram_url, data={"chat_id": chat_id, "text": message})
+        alert_response = requests.post(telegram_url, data={"chat_id": chat_id, "text": message}, timeout=10)
         alert_response.raise_for_status()
         print(f"Alert triggered and sent! Current price (₹{price_per_gram_24k}) is <= ₹{ALERT_THRESHOLD}")
     except Exception as telegram_error:
