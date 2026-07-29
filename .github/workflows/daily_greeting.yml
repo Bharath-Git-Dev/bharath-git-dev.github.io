@@ -1,4 +1,4 @@
-name: Daily Telegram Greeting
+name: Daily Datetime Logger
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Allows manual trigger to test immediately
 
 jobs:
-  send-greeting:
+  log-datetime:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -19,11 +19,17 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        # Added pytz for precise timezone handling
-        run: pip install requests pytz
+        # Removed requests since the script no longer uses it
+        run: pip install pytz
 
-      - name: Run Greeting Script
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      - name: Run Logger Script
+        # Make sure your Python file name matches this exactly
         run: python daily_greeting.py
+
+      - name: Commit and Push CSV changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git add datetime_log.csv
+          git commit -m "chore: auto-update datetime log [skip ci]" || echo "No changes to commit"
+          git push
