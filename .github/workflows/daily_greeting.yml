@@ -1,15 +1,13 @@
-name: Daily Telegram Ping
+name: Daily Telegram Greeting
 
 on:
-  push:
-    branches: [main]
   schedule:
-    # Runs exactly once a day at 12:00 PM UTC (5:30 PM IST)
-    - cron: '0 12 * * *'
-  workflow_dispatch:
+    # 04:30 UTC is exactly 10:00 AM IST
+    - cron: '30 4 * * *'
+  workflow_dispatch: # Allows manual trigger to test immediately
 
 jobs:
-  send-ping:
+  send-greeting:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -21,10 +19,11 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install requests
+        # Added pytz for precise timezone handling
+        run: pip install requests pytz
 
-      - name: Execute Daily Ping Script
+      - name: Run Greeting Script
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python gold_tracker.py
+        run: python daily_greeting.py
