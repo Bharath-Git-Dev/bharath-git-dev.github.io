@@ -3,20 +3,20 @@ import csv
 from datetime import datetime
 import requests
 
-# 1. EXTRACT: Fetch tokenized real-time gold price using Demo API Key
+# 1. EXTRACT: Fetch tokenized real-time gold price using your Demo API Key
 try:
-    api_key = os.environ.get("COINGECKO_API_KEY")
+    # 🌟 PASTE YOUR EXACT COINGECKO API KEY INSIDE THESE QUOTES:
+    api_key = "cg-kggejjqvrlbyzbb6zhjfzafn" 
     
-    # Updated URL structure explicitly for the free Developer Demo API domain
+    # Corrected URL format: Notice the 'x_cg_demo_api_key=' portion is properly separated
     url = f"https://coingecko.com{api_key}"
     
-    # Adding headers prevents the server from blocking the script as a basic bot
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     }
     
     response = requests.get(url, headers=headers)
-    response.raise_for_status() # Force an explicit error if the webpage blocks us
+    response.raise_for_status() 
     data = response.json()
     
     price_per_ounce_inr = data["pax-gold"]["inr"]
