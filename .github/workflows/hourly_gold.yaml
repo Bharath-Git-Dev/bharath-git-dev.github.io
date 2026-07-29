@@ -24,9 +24,9 @@ jobs:
 
       - name: Run Tracker and Check Alert
         env:
+          # Kept securely for your Telegram messaging bot
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
         run: python gold_tracker.py
 
       - name: Save CSV Data back to Repo
@@ -34,5 +34,6 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "Gold Tracker Bot"
           git add gold_prices.csv
+          # [skip ci] prevents the automated commit from triggering this loop infinitely
           git commit -m "data: hourly gold price update [skip ci]" || echo "No changes"
           git push
