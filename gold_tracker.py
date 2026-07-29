@@ -3,32 +3,31 @@ import csv
 from datetime import datetime
 import requests
 
-# 1. EXTRACT: Fetch traditional spot gold price using yfinance public web queries
+# 1. EXTRACT: Fetch gold spot value using highly scalable public CDN endpoints
 try:
-    # 1 Troy Ounce of Gold Spot price in USD
-    gold_url = "https://yahoo.com"
-    # Live USD to INR conversion rate ticker
-    fx_url = "https://yahoo.com"
+    # Fetch global currency metrics mapped directly to Gold (XAU) from an open CDN mirror
+    url = "https://jsdelivr.net"
     
-    # Masquerade cleanly using robust browser headers to bypass cloud firewalls
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     }
     
-    # Fetch Gold USD price
-    gold_response = requests.get(gold_url, headers=headers, timeout=15)
-    gold_response.raise_for_status()
-    gold_data = gold_response.json()
-    price_per_ounce_usd = float(gold_data["chart"]["result"][0]["meta"]["regularMarketPrice"])
+    response = requests.get(url, headers=headers, timeout=15)
     
-    # Fetch Currency conversion rate
-    fx_response = requests.get(fx_url, headers=headers, timeout=15)
-    fx_response.raise_for_status()
-    fx_data = fx_response.json()
-    usd_to_inr_rate = float(fx_data["chart"]["result"][0]["meta"]["regularMarketPrice"])
+    # Backup alternative engine endpoint route if the primary CDN is routing slow
+    if response.status_code != 200:
+        url = "https://pages.dev"
+        response = requests.get(url, headers=headers, timeout=15)
+        
+    response.raise_for_status()
+    data = response.json()
     
-    # Calculate: Convert Troy Ounce USD to INR, then divide to get price per 1 Gram of 24K Gold
-    price_per_ounce_inr = price_per_ounce_usd * usd_to_inr_rate
+    # Get the value of 1 Troy Ounce of Gold converted to Indian Rupees (INR)
+    # The API returns the value of 1 INR in XAU, so we take the inverse (1 / value)
+    inr_to_xau_rate = float(data["xau"]["inr"])
+    price_per_ounce_inr = 1 / inr_to_xau_rate
+    
+    # Convert 1 Troy Ounce directly to 1 Gram of 24K Gold
     price_per_gram_24k = round(price_per_ounce_inr / 31.1034768, 2)
     
 except Exception as e:
@@ -51,6 +50,7 @@ with open(file_path, mode="a", newline="") as file:
     writer.writerow([current_date, current_time, price_per_gram_24k])
 
 # 3. ALERT CONDITIONAL: Fire alert only if price targets ₹14,000 or lower
+# (To test your Telegram bot right now, you can temporarily change this to 200000.00!)
 ALERT_THRESHOLD = 14000.00
 
 if price_per_gram_24k <= ALERT_THRESHOLD:
@@ -63,7 +63,7 @@ if price_per_gram_24k <= ALERT_THRESHOLD:
         f"📉 Current Price: ₹{price_per_gram_24k}/gm\n"
         f"🎯 Target Level: ≤ ₹{ALERT_THRESHOLD}\n"
         f"🕒 Time: {current_date} {current_time} UTC\n"
-        f"🌐 Source: Market Ticker Feed"
+        f"🌐 Source: Open Currency Engine"
     )
     
     telegram_url = f"https://telegram.org{bot_token}/sendMessage"
