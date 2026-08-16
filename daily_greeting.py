@@ -4,7 +4,6 @@ from datetime import datetime
 import pytz
 
 def log_datetime_to_csv():
-    # Define CSV file name
     csv_file = "datetime_log.csv"
     
     # Get current time in India (IST)
