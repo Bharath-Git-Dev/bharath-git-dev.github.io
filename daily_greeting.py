@@ -36,4 +36,3 @@ def log_datetime_to_csv():
 
 if __name__ == "__main__":
     log_datetime_to_csv()
-
